@@ -26,6 +26,6 @@ simdjson_dep = declare_dependency(
 
 executable(
   'app',
-  ['src/main.cpp'],
+  ['src/main.cpp', 'src/bybit/ws/data.cpp'],
   dependencies: [boost_dep, ssl_dep, simdjson_dep],
 )
