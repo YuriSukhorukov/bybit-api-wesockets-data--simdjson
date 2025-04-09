@@ -15,14 +15,13 @@ add_project_arguments(
 boost_dep = dependency('boost', modules: ['system', 'thread'])
 ssl_dep = dependency('openssl')
 
-# subdir('libs/simdjson')
-# subdir('src')
+# simdjson_src = files('libs/simdjson/simdjson.cpp')
+# simdjson_dep = declare_dependency(
+#   include_directories: include_directories('libs/simdjson'),
+#   sources: simdjson_src,
+# )
 
-simdjson_src = files('libs/simdjson/simdjson.cpp')
-simdjson_dep = declare_dependency(
-  include_directories: include_directories('libs/simdjson'),
-  sources: simdjson_src,
-)
+subdir('libs/simdjson')
 
 executable(
   'app',
