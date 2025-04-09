@@ -9,15 +9,31 @@
 #include <simdjson.h>
 #include "bybit/ws/data.h"
 
-namespace net = boost::asio;
-namespace ssl = boost::asio::ssl;
-namespace beast = boost::beast;
-namespace websocket = beast::websocket;
+namespace net         = boost::asio;
+namespace ssl         = boost::asio::ssl;
+namespace beast       = boost::beast;
+namespace websocket   = beast::websocket;
 
 using tcp = net::ip::tcp;
 using namespace simdjson;
 
 void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws);
+void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
+             beast::flat_buffer &buffer,
+             beast::error_code ec,
+             std::size_t bytes_transferred);
+
+
+
+void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws) {
+  auto *buffer = new beast::flat_buffer();
+  ws.async_read(
+      *buffer,
+      [&, buffer](beast::error_code ec, std::size_t bytes_transferred) {
+        on_read(ws, *buffer, ec, bytes_transferred);
+        delete buffer;
+      });
+}
 void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
              beast::flat_buffer &buffer,
              beast::error_code ec,
@@ -40,23 +56,9 @@ void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
   buffer.consume(bytes_transferred); // Очистка буфера
   do_read(ws); // Читаем следующее сообщение
 }
-void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws) {
-  auto *buffer = new beast::flat_buffer();
-  // auto start = std::chrono::high_resolution_clock::now();
-
-  ws.async_read(
-      *buffer,
-      [&, buffer](beast::error_code ec, std::size_t bytes_transferred) {
-        on_read(ws, *buffer, ec, bytes_transferred);
-        delete buffer;
-      });
-}
 
 int main() {
     try {
-      // ssl::context ctx(ssl::context::tls_client);
-      // ctx.set_verify_mode(ssl::verify_none);
-
       net::io_context ioc;
       ssl::context ctx(ssl::context::tlsv12_client);
       
