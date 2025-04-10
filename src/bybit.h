@@ -50,7 +50,7 @@ struct TradeSnapshot {
 
 
 struct TradeSnapshotImpl {
-  static void parse(beast::flat_buffer &buffer);
+  static std::optional<TradeSnapshot> parse(beast::flat_buffer &buffer);
 };
 
 
