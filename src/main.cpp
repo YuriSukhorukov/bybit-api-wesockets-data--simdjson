@@ -7,7 +7,7 @@
 #include <iostream>
 #include <chrono>
 #include <simdjson.h>
-#include "bybit/ws/data.h"
+// #include "bybit/ws/data.h"
 #include "bybit.h"
 
 namespace net         = boost::asio;
@@ -18,45 +18,45 @@ namespace websocket   = beast::websocket;
 using tcp = net::ip::tcp;
 using namespace simdjson;
 
-void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws);
-void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
-             beast::flat_buffer &buffer,
-             beast::error_code ec,
-             std::size_t bytes_transferred);
+// void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws);
+// void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
+//              beast::flat_buffer &buffer,
+//              beast::error_code ec,
+//              std::size_t bytes_transferred);
 
 
 
-void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws) {
-  auto *buffer = new beast::flat_buffer();
-  ws.async_read(
-      *buffer,
-      [&, buffer](beast::error_code ec, std::size_t bytes_transferred) {
-        on_read(ws, *buffer, ec, bytes_transferred);
-        delete buffer;
-      });
-}
-void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
-             beast::flat_buffer &buffer,
-             beast::error_code ec,
-             std::size_t bytes_transferred
-) {
-  if (ec == websocket::error::closed) {
-    std::cout << "🔌 Соединение закрыто сервером\n";
-    return;
-  } else if (ec) {
-    std::cerr << "❌ Ошибка чтения: " << ec.message() << std::endl;
-    return;
-  }
-  std::cout << "// ---------------------------------------------\n";
-  auto start = std::chrono::high_resolution_clock::now();
-  TradeSnapshotImpl::parse(buffer);
-  auto end = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-  std::cout << "Execution time: " << duration.count() << "µs.\n";
+// void do_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws) {
+//   auto *buffer = new beast::flat_buffer();
+//   ws.async_read(
+//       *buffer,
+//       [&, buffer](beast::error_code ec, std::size_t bytes_transferred) {
+//         on_read(ws, *buffer, ec, bytes_transferred);
+//         delete buffer;
+//       });
+// }
+// void on_read(websocket::stream<beast::ssl_stream<tcp::socket>> &ws,
+//              beast::flat_buffer &buffer,
+//              beast::error_code ec,
+//              std::size_t bytes_transferred
+// ) {
+//   if (ec == websocket::error::closed) {
+//     std::cout << "🔌 Соединение закрыто сервером\n";
+//     return;
+//   } else if (ec) {
+//     std::cerr << "❌ Ошибка чтения: " << ec.message() << std::endl;
+//     return;
+//   }
+//   std::cout << "// ---------------------------------------------\n";
+//   auto start = std::chrono::high_resolution_clock::now();
+//   TradeSnapshotImpl::parse(buffer);
+//   auto end = std::chrono::high_resolution_clock::now();
+//   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+//   std::cout << "Execution time: " << duration.count() << "µs.\n";
 
-  buffer.consume(bytes_transferred); // Очистка буфера
-  do_read(ws); // Читаем следующее сообщение
-}
+//   buffer.consume(bytes_transferred); // Очистка буфера
+//   do_read(ws); // Читаем следующее сообщение
+// }
 
 int main() {
   Bybit bybit_instance;
