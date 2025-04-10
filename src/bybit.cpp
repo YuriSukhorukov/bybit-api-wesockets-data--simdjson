@@ -89,10 +89,6 @@ std::optional<TradeSnapshot> TradeSnapshotImpl::parse(simdjson::ondemand::docume
   return trade_snapshot;
 }
 
-void WebsocketsApi::hello() {
-  std::cout << "hello bybit websockets api\n";
-}
-
 std::optional<TradeSnapshot> WebsocketsApi::get_trade_snapshot(simdjson::ondemand::document &doc) {
   return TradeSnapshotImpl::parse(doc);
 }

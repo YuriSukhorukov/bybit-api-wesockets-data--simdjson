@@ -56,7 +56,6 @@ struct TradeSnapshotImpl {
 
 class WebsocketsApi {
 public:
-  void hello();
   std::optional<TradeSnapshot> get_trade_snapshot(simdjson::ondemand::document &doc);
 };
 
