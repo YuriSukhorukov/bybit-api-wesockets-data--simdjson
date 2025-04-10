@@ -36,19 +36,7 @@ for (auto item: data) {
   std::cout << "  }\n";
   std::cout << "}\n";
 }
-std::optional<TradeSnapshot> TradeSnapshotImpl::parse(beast::flat_buffer &buffer) {
-  simdjson::padded_string json_view(
-    static_cast<const char*>(buffer.data().data()), buffer.size()
-  );
-  simdjson::ondemand::parser parser;
-  simdjson::ondemand::document doc;
-
-  auto error = parser.iterate(json_view).get(doc);
-  if (error) {
-    std::cerr << "❌ Ошибка парсинга JSON: " << simdjson::error_message(error) << "\n";
-    return std::nullopt;
-  }
-
+std::optional<TradeSnapshot> TradeSnapshotImpl::parse(simdjson::ondemand::document &doc) {
   auto topic = doc["topic"].get<std::string_view>();
   auto type = doc["type"].get<std::string_view>();
   auto ts = doc["ts"].get<std::uint64_t>();
@@ -103,6 +91,10 @@ std::optional<TradeSnapshot> TradeSnapshotImpl::parse(beast::flat_buffer &buffer
 
 void WebsocketsApi::hello() {
   std::cout << "hello bybit websockets api\n";
+}
+
+std::optional<TradeSnapshot> WebsocketsApi::get_trade_snapshot(simdjson::ondemand::document &doc) {
+  return TradeSnapshotImpl::parse(doc);
 }
 
 Bybit::Bybit(): ws_api(std::make_unique<WebsocketsApi>()) {};

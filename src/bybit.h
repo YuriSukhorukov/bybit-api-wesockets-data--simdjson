@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <boost/beast/core.hpp>
+#include <simdjson.h>
 namespace beast = boost::beast;
 
 
@@ -17,17 +18,6 @@ enum PriceChangeDirection {
   ZeroPlusTick,        // trade occurs at the same price as the previous trade, which occurred at a price higher than that for the trade preceding it
   MinusTick,           // price drop
   ZeroMinusTick,       // trade occurs at the same price as the previous trade, which occurred at a price lower than that for the trade preceding it
-};
-
-
-struct DataTypeImpl {
-  static DataType from_string(const char* str);
-};
-struct TradeSideImpl {
-  static TradeSide from_string(const char* str);
-};
-struct PriceChangeDirectionImpl {
-  static PriceChangeDirection from_string(const char* str);
 };
 struct TradeDataItem {
   std::string_view            symbol;                     // 's': Symbol name
@@ -49,8 +39,17 @@ struct TradeSnapshot {
 
 
 
+struct DataTypeImpl {
+  static DataType from_string(const char* str);
+};
+struct TradeSideImpl {
+  static TradeSide from_string(const char* str);
+};
+struct PriceChangeDirectionImpl {
+  static PriceChangeDirection from_string(const char* str);
+};
 struct TradeSnapshotImpl {
-  static std::optional<TradeSnapshot> parse(beast::flat_buffer &buffer);
+  static std::optional<TradeSnapshot> parse(simdjson::ondemand::document &doc);
 };
 
 
@@ -58,6 +57,7 @@ struct TradeSnapshotImpl {
 class WebsocketsApi {
 public:
   void hello();
+  std::optional<TradeSnapshot> get_trade_snapshot(simdjson::ondemand::document &doc);
 };
 
 class Bybit {
