@@ -25,6 +25,6 @@ subdir('libs/simdjson')
 
 executable(
   'app',
-  ['src/main.cpp', 'src/bybit/ws/data.cpp'],
+  ['src/main.cpp', 'src/bybit/ws/data.cpp', 'src/bybit.cpp'],
   dependencies: [boost_dep, ssl_dep, simdjson_dep],
 )
